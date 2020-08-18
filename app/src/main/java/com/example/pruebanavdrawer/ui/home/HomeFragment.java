@@ -46,7 +46,6 @@ public class HomeFragment extends Fragment {
 
             {
                 Looper.prepare();
-                Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -62,10 +61,14 @@ public class HomeFragment extends Fragment {
             {
                 Looper.prepare();
                 //  Toast.makeText(PruebaWSActivity.this, , Toast.LENGTH_LONG).show();
+                txt.setText(text);
 
             }
             System.out.println("printing on message...");
             System.out.println(text);
+
+            //Si agrego esta linea no se conecta correctamente al socket
+
 
         }
 
@@ -156,7 +159,11 @@ public class HomeFragment extends Fragment {
         System.out.println(jsonObj);
 
 
+
+
         client.dispatcher().executorService().shutdown();
+
+
 
     }
 
