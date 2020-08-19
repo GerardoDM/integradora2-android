@@ -1,7 +1,9 @@
 package com.example.pruebanavdrawer.ui.home;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.pruebanavdrawer.Activities.PruebaWSActivity;
+import com.example.pruebanavdrawer.Interfaces.IWsMessage;
+import com.example.pruebanavdrawer.Models.D;
+import com.example.pruebanavdrawer.Models.Data;
+import com.example.pruebanavdrawer.Models.Example;
 import com.example.pruebanavdrawer.R;
+import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -35,6 +42,8 @@ public class HomeFragment extends Fragment {
     private OkHttpClient client;
     private TextView txt;
     private WebSocket ws;
+    private String text1;
+    private EchoWebSocketListener echoWebSocketListener;
 
     private final class EchoWebSocketListener extends WebSocketListener {
         private static final int NORMAL_CLOSURE_STATUS = 1000;
@@ -46,12 +55,11 @@ public class HomeFragment extends Fragment {
 
             {
                 Looper.prepare();
-                return;
             }
 
             System.out.println("printing on open...");
             System.out.println(response.message());
-            // webSocket.send("dispense");
+
 
         }
 
@@ -60,15 +68,39 @@ public class HomeFragment extends Fragment {
             if (Looper.myLooper() == null)
             {
                 Looper.prepare();
-                //  Toast.makeText(PruebaWSActivity.this, , Toast.LENGTH_LONG).show();
-                txt.setText(text);
+
 
             }
-            System.out.println("printing on message...");
-            System.out.println(text);
 
-            //Si agrego esta linea no se conecta correctamente al socket
 
+            //System.out.println("printing on message...");
+            //System.out.println(text);
+            Handler handler =  new Handler(getActivity().getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+
+                    JSONObject jsonObject = null;
+                    try {
+                        jsonObject = new JSONObject(text);
+                    } catch (JSONException err) {
+                        Log.d("Error", err.toString());
+                    }
+
+
+
+
+                    //   Gson gson = new Gson();
+               //     Example example = gson.fromJson(String.valueOf(jsonObject), Example.class);
+
+                 //   Toast.makeText(getActivity(), example.getD().getEvent(), Toast.LENGTH_LONG).show();
+
+                    //_action(example);
+
+                }
+            });
+
+            //_action(example);
 
         }
 
@@ -97,10 +129,12 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         btn = view.findViewById(R.id.btn);
         txt = view.findViewById(R.id.txt);
         btnOpen = view.findViewById(R.id.btnOpen);
         client = new OkHttpClient();
+
 
         btnOpen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +155,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -128,6 +163,10 @@ public class HomeFragment extends Fragment {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+
+
+
+
         final TextView textView = root.findViewById(R.id.text_home);
         homeViewModel.getText().observe(this, new Observer<String>() {
             @Override
@@ -135,14 +174,14 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
         return root;
     }
 
     private void action(){
 
-
-        Request request = new Request.Builder().url("ws://192.168.100.7:3333/adonis-ws").build();
-        HomeFragment.EchoWebSocketListener listener = new HomeFragment.EchoWebSocketListener();
+        Request request = new Request.Builder().url("ws://165.227.23.126:8888/adonis-ws").build();
+        EchoWebSocketListener listener = new HomeFragment.EchoWebSocketListener();
 
         ws = client.newWebSocket(request, listener);
 
@@ -150,6 +189,7 @@ public class HomeFragment extends Fragment {
         JSONObject jsonObj = null;
         try {
             jsonObj = new JSONObject("{\"t\":1, \"d\":{\"topic\":\"iot\"}}\"");
+            System.out.println("making json");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -161,7 +201,9 @@ public class HomeFragment extends Fragment {
 
 
 
+
         client.dispatcher().executorService().shutdown();
+
 
 
 
@@ -179,6 +221,36 @@ public class HomeFragment extends Fragment {
 
         ws.send(String.valueOf(jsonObj2));
 
+    }
+
+    private void _action(JSONObject jsonObject){
+
+        String event = null;
+
+        try {
+            event = jsonObject.getJSONObject("d").getString("event").toUpperCase();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(event.equals("MEASURE")){
+            try {
+                txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        if(event.equals("MESSAGE")){
+            Toast.makeText(getActivity(), "event message", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void showToast(String text){
+        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+        System.out.println("printing message/below toast");
     }
 
 }
