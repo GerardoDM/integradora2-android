@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private Button btn, btnOpen;
     private OkHttpClient client;
-    private TextView txt;
+    private TextView txt, txt2;
     private WebSocket ws;
     private String text1;
     private EchoWebSocketListener echoWebSocketListener;
@@ -65,8 +65,7 @@ public class HomeFragment extends Fragment {
 
         @Override
         public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
-            if (Looper.myLooper() == null)
-            {
+            if (Looper.myLooper() == null) {
                 Looper.prepare();
 
 
@@ -75,7 +74,7 @@ public class HomeFragment extends Fragment {
 
             //System.out.println("printing on message...");
             //System.out.println(text);
-            Handler handler =  new Handler(getActivity().getMainLooper());
+            Handler handler = new Handler(getActivity().getMainLooper());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -83,26 +82,24 @@ public class HomeFragment extends Fragment {
                     JSONObject jsonObject = null;
                     try {
                         jsonObject = new JSONObject(text);
+                        _action(jsonObject);
                     } catch (JSONException err) {
                         Log.d("Error", err.toString());
                     }
 
 
-
-
                     //   Gson gson = new Gson();
-               //     Example example = gson.fromJson(String.valueOf(jsonObject), Example.class);
+                    //     Example example = gson.fromJson(String.valueOf(jsonObject), Example.class);
 
-                 //   Toast.makeText(getActivity(), example.getD().getEvent(), Toast.LENGTH_LONG).show();
+                    //   Toast.makeText(getActivity(), example.getD().getEvent(), Toast.LENGTH_LONG).show();
 
                     //_action(example);
 
                 }
             });
 
-            //_action(example);
-
         }
+
 
         @Override
         public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
@@ -132,6 +129,7 @@ public class HomeFragment extends Fragment {
 
         btn = view.findViewById(R.id.btn);
         txt = view.findViewById(R.id.txt);
+        txt2 = view.findViewById(R.id.txt2);
         btnOpen = view.findViewById(R.id.btnOpen);
         client = new OkHttpClient();
 
@@ -199,9 +197,6 @@ public class HomeFragment extends Fragment {
         System.out.println(jsonObj);
 
 
-
-
-
         client.dispatcher().executorService().shutdown();
 
 
@@ -231,19 +226,48 @@ public class HomeFragment extends Fragment {
             event = jsonObject.getJSONObject("d").getString("event").toUpperCase();
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-
-        if(event.equals("MEASURE")){
-            try {
-                txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
             return;
         }
 
         if(event.equals("MESSAGE")){
-            Toast.makeText(getActivity(), "event message", Toast.LENGTH_SHORT).show();
+
+            try {
+                showToast(jsonObject.getJSONObject("d").toString(8));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
+        try {
+            jsonObject.getJSONObject("d").getJSONObject("data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+
+        if(event.equals("MEASURE")){
+            try {
+           txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Double num = null;
+        try {
+            num = Double.parseDouble(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
+        } catch (NumberFormatException | JSONException e) {
+            e.printStackTrace();
+        }
+        if (num >= 170){
+            txt2.setText("Vacio");
+        }
+        else {
+            txt2.setText("Lleno");
         }
 
     }
