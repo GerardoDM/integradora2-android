@@ -1,11 +1,18 @@
-package com.example.pruebanavdrawer.Activities;
+package com.example.pruebanavdrawer.ui.login;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,8 +21,9 @@ import android.widget.Toast;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
+import com.example.pruebanavdrawer.Activities.LoginActivity;
+import com.example.pruebanavdrawer.Activities.PruebaWSActivity;
 import com.example.pruebanavdrawer.Interfaces.Api;
-import com.example.pruebanavdrawer.MainActivity;
 import com.example.pruebanavdrawer.Models.AccessToken;
 import com.example.pruebanavdrawer.R;
 
@@ -25,7 +33,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginFragment extends Fragment {
 
     Button btnlogin;
     TextView linkRegister;
@@ -33,32 +41,31 @@ public class LoginActivity extends AppCompatActivity {
 
     AwesomeValidation validator;
 
+    private LoginViewModel mViewModel;
+
+    public static LoginFragment newInstance() {
+        return new LoginFragment();
+    }
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    }
 
-        btnlogin = (Button) findViewById(R.id.btn_login);
-        username = (EditText) findViewById(R.id.input_username);
-        password = (EditText) findViewById(R.id.input_password);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        linkRegister = (TextView) findViewById(R.id.link_register);
+        btnlogin = (Button) view.findViewById(R.id.btn_login);
+        username = (EditText) view.findViewById(R.id.input_username);
+        password = (EditText) view.findViewById(R.id.input_password);
+
+        linkRegister = (TextView) view.findViewById(R.id.link_register);
 
         validator = new AwesomeValidation(ValidationStyle.BASIC);
 
         setupRules();
-
-
-        linkRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                goToRegister();
-
-            }
-        });
-
 
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +75,18 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.login_fragment, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        // TODO: Use the ViewModel
+    }
 
     void login() {
 
@@ -93,14 +112,13 @@ public class LoginActivity extends AppCompatActivity {
 
                     if (!response.isSuccessful()) {
 
-                        Toast.makeText(LoginActivity.this, response.message(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
 
 
                         return;
                     }
 
-                    startActivity(new Intent(LoginActivity.this, PruebaWSActivity.class));
-                    finish();
+
 
 
 
@@ -110,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(Call<AccessToken> call, Throwable t) {
                     //textViewResult.setText(t.getMessage());
 
-                    Toast.makeText(LoginActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -119,14 +137,9 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    void goToRegister(){
-        startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-    }
-
     public void setupRules () {
-        validator.addValidation(this, R.id.input_email, Patterns.EMAIL_ADDRESS, R.string.err_email);
-        validator.addValidation(this, R.id.input_password, RegexTemplate.NOT_EMPTY, R.string.err_password);
+        validator.addValidation(getActivity(), R.id.input_email, Patterns.EMAIL_ADDRESS, R.string.err_email);
+        validator.addValidation(getActivity(), R.id.input_password, RegexTemplate.NOT_EMPTY, R.string.err_password);
     }
-
 
 }

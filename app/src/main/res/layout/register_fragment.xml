@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:background="@color/colorPrimaryDark"
-    android:orientation="vertical" >
-
+    android:orientation="vertical"
+    tools:context=".ui.register.RegisterFragment">
 
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -61,6 +59,16 @@
         android:text="Ya tienes cuenta? Login"
         android:gravity="center"
         android:textSize="16dip"/>
+
+
+
+
+
+
+
+
+
+
 
 
 </LinearLayout>

@@ -1,11 +1,18 @@
-package com.example.pruebanavdrawer.Activities;
+package com.example.pruebanavdrawer.ui.register;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -14,6 +21,7 @@ import android.widget.Toast;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
+import com.example.pruebanavdrawer.Activities.RegisterActivity;
 import com.example.pruebanavdrawer.Interfaces.Api;
 import com.example.pruebanavdrawer.MainActivity;
 import com.example.pruebanavdrawer.Models.User;
@@ -25,7 +33,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterFragment extends Fragment {
 
 
     Button btnregister;
@@ -33,28 +41,28 @@ public class RegisterActivity extends AppCompatActivity {
     EditText email, password;
     AwesomeValidation validator;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+    private RegisterViewModel mViewModel;
 
-        btnregister = (Button) findViewById(R.id.btn_register);
-        email = (EditText) findViewById(R.id.input_email);
-        password = (EditText) findViewById(R.id.input_password);
-        linkLogin = (TextView) findViewById(R.id.link_login);
+    public static RegisterFragment newInstance() {
+        return new RegisterFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        btnregister = (Button) view.findViewById(R.id.btn_register);
+        email = (EditText) view.findViewById(R.id.input_email);
+        password = (EditText) view.findViewById(R.id.input_password);
+        linkLogin = (TextView) view.findViewById(R.id.link_login);
         validator = new AwesomeValidation(ValidationStyle.BASIC);
 
         setupRules();
-
-
-        linkLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                goToLogin();
-
-            }
-        });
 
         btnregister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,10 +71,20 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
 
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.register_fragment, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
+        // TODO: Use the ViewModel
+    }
 
     void register(){
 
@@ -92,14 +110,13 @@ public class RegisterActivity extends AppCompatActivity {
 
                     if (!response.isSuccessful()){
 
-                        Toast.makeText(RegisterActivity.this, response.message(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
 
 
                         return ;
                     }
 
-                    startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-                    finish();
+
 
 
 
@@ -109,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity {
                 public void onFailure(Call<User> call, Throwable t) {
                     //textViewResult.setText(t.getMessage());
 
-                    Toast.makeText(RegisterActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -119,16 +136,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    void goToLogin(){
-
-        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-
-    }
-
     public void setupRules () {
-        validator.addValidation(this, R.id.input_email, Patterns.EMAIL_ADDRESS, R.string.err_email);
-        validator.addValidation(this, R.id.input_password, RegexTemplate.NOT_EMPTY, R.string.err_password);
+        validator.addValidation(getActivity(), R.id.input_email, Patterns.EMAIL_ADDRESS, R.string.err_email);
+        validator.addValidation(getActivity(), R.id.input_password, RegexTemplate.NOT_EMPTY, R.string.err_password);
     }
-
 
 }
