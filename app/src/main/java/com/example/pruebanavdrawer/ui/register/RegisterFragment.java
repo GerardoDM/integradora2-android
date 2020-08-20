@@ -60,7 +60,7 @@ public class RegisterFragment extends Fragment {
         linkLogin = (TextView) view.findViewById(R.id.link_login);
         validator = new AwesomeValidation(ValidationStyle.BASIC);
 
-      //  setupRules();
+       setupRules();
 
         btnregister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,9 +93,9 @@ public class RegisterFragment extends Fragment {
 
     private void register(){
 
-      //  validator.clear();
+        validator.clear();
 
-     //  if (validator.validate()){
+      if (validator.validate()){
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://165.227.23.126:8888/user/")
@@ -141,7 +141,7 @@ public class RegisterFragment extends Fragment {
                 }
             });
 
-        //}
+        }
 
 
 

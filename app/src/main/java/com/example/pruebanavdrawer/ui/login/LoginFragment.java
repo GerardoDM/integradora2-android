@@ -37,7 +37,8 @@ public class LoginFragment extends Fragment {
 
     private Button btnlogin;
     private TextView linkRegister;
-    private EditText username, password;
+    private EditText email, password;
+   // private String inputemail, inputpassword;
 
     private AwesomeValidation validator;
 
@@ -58,17 +59,19 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         btnlogin = (Button) view.findViewById(R.id.btn_login);
-        username = (EditText) view.findViewById(R.id.input_username);
+        email = (EditText) view.findViewById(R.id.input_email);
         password = (EditText) view.findViewById(R.id.input_password);
 
-        username.setText("e@e.com");
-        password.setText("123123123");
+   //     email.setText("e@e.com");
+     //   password.setText("123123123");
 
         linkRegister = (TextView) view.findViewById(R.id.link_register);
 
         validator = new AwesomeValidation(ValidationStyle.BASIC);
 
-       // setupRules();
+        setupRules();
+
+
 
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,14 +99,18 @@ public class LoginFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+
         // TODO: Use the ViewModel
     }
 
     private void login() {
 
-        //validator.clear();
+       //String inputemail = email.getText().toString();
+        //String inputpassword = password.getText().toString();
 
-        //if (validator.validate()){
+        validator.clear();
+
+        if (validator.validate()){
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://165.227.23.126:8888/user/")
@@ -112,9 +119,7 @@ public class LoginFragment extends Fragment {
 
             Api api = retrofit.create(Api.class);
 
-            Call<Example2> call = api.login(
-                    username.getText().toString(),
-                    password.getText().toString());
+            Call<Example2> call = api.login(email.getText().toString(), password.getText().toString());
 
             call.enqueue(new Callback<Example2>() {
                 @Override
@@ -148,7 +153,6 @@ public class LoginFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<Example2> call, Throwable t) {
-                    //textViewResult.setText(t.getMessage());
 
                     Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                 }
@@ -157,7 +161,7 @@ public class LoginFragment extends Fragment {
         }
 
 
-    //}
+    }
 
     private void setupRules () {
         validator.addValidation(getActivity(), R.id.input_email, Patterns.EMAIL_ADDRESS, R.string.err_email);
