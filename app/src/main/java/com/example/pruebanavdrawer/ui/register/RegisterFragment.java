@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -71,6 +72,13 @@ public class RegisterFragment extends Fragment {
             }
         });
 
+        linkLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(view).navigate(R.id.loginFragment);
+            }
+        });
+
     }
 
     @Override
@@ -93,7 +101,7 @@ public class RegisterFragment extends Fragment {
         if (validator.validate()){
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://165.227.23.126:3333/user/")
+                    .baseUrl("http://165.227.23.126:8888/user/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -115,6 +123,9 @@ public class RegisterFragment extends Fragment {
 
                         return ;
                     }
+
+
+
 
 
 

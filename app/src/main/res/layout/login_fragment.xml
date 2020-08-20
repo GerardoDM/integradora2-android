@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
     tools:context=".ui.login.LoginFragment">
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -11,7 +12,7 @@
         android:layout_height="125dp"
         android:layout_gravity="center"
         android:layout_marginTop="100dp"
-        android:src="@drawable/dog"></androidx.appcompat.widget.AppCompatImageView>
+        android:foreground="@drawable/dog"/>
 
 
     <!-- Username Label -->
@@ -57,6 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:text="No tienes cuenta? Registrate"
+        android:textColor="@color/cardview_light_background"
+
         android:gravity="center"
         android:textSize="16dip"/>
 

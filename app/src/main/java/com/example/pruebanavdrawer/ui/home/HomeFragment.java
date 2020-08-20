@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment {
         txt = view.findViewById(R.id.txt);
         txt2 = view.findViewById(R.id.txt2);
         btnOpen = view.findViewById(R.id.btnOpen);
-        btnNotification = view.findViewById(R.id.btnNotification);
+
         client = new OkHttpClient();
 
 
@@ -153,13 +153,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        btnNotification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNotificationChannel();
-                createNotification();
-            }
-        });
 
     }
 
@@ -272,7 +265,7 @@ public class HomeFragment extends Fragment {
                 return;
             }
 
-        }   
+        }
 
         try {
             jsonObject.getJSONObject("d").getJSONObject("data");
