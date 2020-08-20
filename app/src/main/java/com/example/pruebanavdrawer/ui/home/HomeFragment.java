@@ -254,12 +254,25 @@ public class HomeFragment extends Fragment {
 
             try {
                 showToast(jsonObject.getJSONObject("d").toString(8));
-                return;
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
             }
-        }
+
+            try{
+                boolean servo_active = jsonObject.getJSONObject("d").getJSONObject("data").getBoolean("servo_active");
+                if(servo_active){
+                    createNotificationChannel();
+                    createNotification();
+                    return;
+                }
+
+            } catch (JSONException e){
+                e.printStackTrace();
+                return;
+            }
+
+        }   
 
         try {
             jsonObject.getJSONObject("d").getJSONObject("data");
@@ -272,12 +285,25 @@ public class HomeFragment extends Fragment {
         if(event.equals("MEASURE")){
             try {
            txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
-           createNotificationChannel();
-           createNotification();
+
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
             }
+        }
+
+
+        if(event.equals("START_SERVO")){
+            createNotificationChannel();
+            createNotification();
+            return;
+            /*try {
+                createNotificationChannel();
+                createNotification();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }*/
         }
 
         Double num = null;
