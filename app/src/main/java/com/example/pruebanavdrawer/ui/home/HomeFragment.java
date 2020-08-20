@@ -1,5 +1,8 @@
 package com.example.pruebanavdrawer.ui.home;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,17 +16,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.pruebanavdrawer.Activities.PruebaWSActivity;
-import com.example.pruebanavdrawer.Interfaces.IWsMessage;
-import com.example.pruebanavdrawer.Models.D;
-import com.example.pruebanavdrawer.Models.Data;
-import com.example.pruebanavdrawer.Models.Example;
 import com.example.pruebanavdrawer.R;
-import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -35,14 +34,19 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    private Button btn, btnOpen;
+    private Button btn, btnOpen, btnNotification;
     private OkHttpClient client;
     private TextView txt, txt2;
     private WebSocket ws;
     private String text1;
+    private static  final String  CHANNEL_ID = "NOTIFICATION";
+    private static  final int NOTIFICATION_ID = 0;
+
     private EchoWebSocketListener echoWebSocketListener;
 
     private final class EchoWebSocketListener extends WebSocketListener {
@@ -131,6 +135,7 @@ public class HomeFragment extends Fragment {
         txt = view.findViewById(R.id.txt);
         txt2 = view.findViewById(R.id.txt2);
         btnOpen = view.findViewById(R.id.btnOpen);
+        btnNotification = view.findViewById(R.id.btnNotification);
         client = new OkHttpClient();
 
 
@@ -145,6 +150,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 action();
+            }
+        });
+
+        btnNotification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createNotificationChannel();
+                createNotification();
             }
         });
 
@@ -277,4 +290,38 @@ public class HomeFragment extends Fragment {
         System.out.println("printing message/below toast");
     }
 
+    private void createNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity(), CHANNEL_ID);
+        builder.setContentTitle("Notificacion Puerta")
+                .setContentText("Se abrió la compuerta de croquetas")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setSmallIcon(R.drawable.dog);
+
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getActivity());
+        notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
+
+
+
+
+    }
+
+
+    private void createNotificationChannel(){
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "Notification";
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager notificationManager = (NotificationManager)  getActivity().getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+    }
+
+
+
+
+
 }
+
+
