@@ -272,6 +272,8 @@ public class HomeFragment extends Fragment {
         if(event.equals("MEASURE")){
             try {
            txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
+           createNotificationChannel();
+           createNotification();
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
@@ -285,12 +287,11 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
             return;
         }
-        if (num >= 170){
+        if (num <= 170){
             txt2.setText("Vacio");
+            return;
         }
-        else {
-            txt2.setText("Lleno");
-        }
+        txt2.setText("Lleno");
 
     }
 
