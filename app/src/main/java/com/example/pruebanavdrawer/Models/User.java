@@ -8,9 +8,9 @@ public class User {
     @SerializedName("username")
     @Expose
     private String username;
-    @SerializedName("password")
+    @SerializedName("email")
     @Expose
-    private String password;
+    private String email;
     @SerializedName("created_at")
     @Expose
     private String createdAt;
@@ -29,12 +29,12 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getCreatedAt() {

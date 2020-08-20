@@ -2,7 +2,8 @@ package com.example.pruebanavdrawer.ui.login;
 
 import androidx.lifecycle.ViewModelProviders;
 
-import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,10 +23,8 @@ import android.widget.Toast;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
-import com.example.pruebanavdrawer.Activities.LoginActivity;
-import com.example.pruebanavdrawer.Activities.PruebaWSActivity;
 import com.example.pruebanavdrawer.Interfaces.Api;
-import com.example.pruebanavdrawer.Models.AccessToken;
+import com.example.pruebanavdrawer.Models.Example2;
 import com.example.pruebanavdrawer.R;
 
 import retrofit2.Call;
@@ -36,11 +35,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginFragment extends Fragment {
 
-    Button btnlogin;
-    TextView linkRegister;
-    EditText username, password;
+    private Button btnlogin;
+    private TextView linkRegister;
+    private EditText username, password;
 
-    AwesomeValidation validator;
+    private AwesomeValidation validator;
 
     private LoginViewModel mViewModel;
 
@@ -62,11 +61,14 @@ public class LoginFragment extends Fragment {
         username = (EditText) view.findViewById(R.id.input_username);
         password = (EditText) view.findViewById(R.id.input_password);
 
+        username.setText("e@e.com");
+        password.setText("123123123");
+
         linkRegister = (TextView) view.findViewById(R.id.link_register);
 
         validator = new AwesomeValidation(ValidationStyle.BASIC);
 
-        setupRules();
+       // setupRules();
 
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,11 +99,11 @@ public class LoginFragment extends Fragment {
         // TODO: Use the ViewModel
     }
 
-    void login() {
+    private void login() {
 
-        validator.clear();
+        //validator.clear();
 
-        if (validator.validate()){
+        //if (validator.validate()){
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://165.227.23.126:8888/user/")
@@ -110,13 +112,13 @@ public class LoginFragment extends Fragment {
 
             Api api = retrofit.create(Api.class);
 
-            Call<AccessToken> call = api.login(
+            Call<Example2> call = api.login(
                     username.getText().toString(),
                     password.getText().toString());
 
-            call.enqueue(new Callback<AccessToken>() {
+            call.enqueue(new Callback<Example2>() {
                 @Override
-                public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                public void onResponse(Call<Example2> call, Response<Example2> response) {
 
 
                     if (!response.isSuccessful()) {
@@ -127,14 +129,25 @@ public class LoginFragment extends Fragment {
                         return;
                     }
 
-                    Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
 
+                    String token = null;
+                    try {
+                        Toast.makeText(getActivity(), response.body().getAuth().getToken(), Toast.LENGTH_LONG).show();
+                        token = response.body().getAuth().getToken();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+                    SharedPreferences preferences = getActivity().getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
+                    preferences.edit().putString("TOKEN", token).apply();
+
+                    Navigation.findNavController(getView()).navigate(R.id.nav_home);
 
 
                 }
 
                 @Override
-                public void onFailure(Call<AccessToken> call, Throwable t) {
+                public void onFailure(Call<Example2> call, Throwable t) {
                     //textViewResult.setText(t.getMessage());
 
                     Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
@@ -144,9 +157,9 @@ public class LoginFragment extends Fragment {
         }
 
 
-    }
+    //}
 
-    public void setupRules () {
+    private void setupRules () {
         validator.addValidation(getActivity(), R.id.input_email, Patterns.EMAIL_ADDRESS, R.string.err_email);
         validator.addValidation(getActivity(), R.id.input_password, RegexTemplate.NOT_EMPTY, R.string.err_password);
     }

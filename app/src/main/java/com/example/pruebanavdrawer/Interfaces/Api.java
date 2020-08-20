@@ -1,6 +1,8 @@
 package com.example.pruebanavdrawer.Interfaces;
 
 import com.example.pruebanavdrawer.Models.AccessToken;
+import com.example.pruebanavdrawer.Models.Auth;
+import com.example.pruebanavdrawer.Models.Example2;
 import com.example.pruebanavdrawer.Models.User;
 
 import retrofit2.Call;
@@ -16,6 +18,6 @@ public interface Api {
 
     @POST("login")
     @FormUrlEncoded
-    Call<AccessToken> login (@Field("email") String email, @Field("password") String password);
+    Call<Example2> login (@Field("email") String email, @Field("password") String password);
 
 }

@@ -2,10 +2,13 @@ package com.example.pruebanavdrawer.ui.home;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,7 +42,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    private Button btn, btnOpen, btnNotification;
+    private Button btn, btnOpen, btnNotification, btnToken;
     private OkHttpClient client;
     private TextView txt, txt2;
     private WebSocket ws;
@@ -135,8 +138,17 @@ public class HomeFragment extends Fragment {
         txt = view.findViewById(R.id.txt);
         txt2 = view.findViewById(R.id.txt2);
         btnOpen = view.findViewById(R.id.btnOpen);
+        btnToken = view.findViewById(R.id.btnToken);
 
         client = new OkHttpClient();
+
+
+        btnToken.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showToken();
+            }
+        });
 
 
         btnOpen.setOnClickListener(new View.OnClickListener() {
@@ -317,6 +329,7 @@ public class HomeFragment extends Fragment {
     private void showToast(String text){
         Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
         System.out.println("printing message/below toast");
+
     }
 
     private void createNotification(){
@@ -345,6 +358,12 @@ public class HomeFragment extends Fragment {
             notificationManager.createNotificationChannel(notificationChannel);
         }
 
+    }
+
+    private void showToken(){
+        SharedPreferences preferences = getActivity().getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
+        String retrivedToken  = preferences.getString("TOKEN",null);//second parameter default value.
+        Toast.makeText(getActivity(), retrivedToken, Toast.LENGTH_LONG).show();
     }
 
 
