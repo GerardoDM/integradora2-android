@@ -191,6 +191,11 @@ public class HomeFragment extends Fragment {
 
     private void action(){
 
+        if(ws != null){
+            showToast("Ya se ha conectado al servidor...");
+            return;
+        }
+
         Request request = new Request.Builder().url("ws://165.227.23.126:8888/adonis-ws").build();
         EchoWebSocketListener listener = new HomeFragment.EchoWebSocketListener();
 
@@ -203,27 +208,30 @@ public class HomeFragment extends Fragment {
             System.out.println("making json");
         } catch (JSONException e) {
             e.printStackTrace();
+            return;
         }
-
 
         ws.send(String.valueOf(jsonObj));
         System.out.println(jsonObj);
 
-
         client.dispatcher().executorService().shutdown();
-
-
 
 
     }
 
     private void open(){
 
+        if(ws == null){
+            showToast("Primero debe conectarse al servidor...");
+            return;
+        }
+
         JSONObject jsonObj2 = null;
         try {
             jsonObj2 = new JSONObject("{\"t\":7,\"d\":{\"topic\":\"iot\",\"event\":\"dispense\"}}");
         } catch (JSONException e) {
             e.printStackTrace();
+            return;
         }
 
 
@@ -246,6 +254,7 @@ public class HomeFragment extends Fragment {
 
             try {
                 showToast(jsonObject.getJSONObject("d").toString(8));
+                return;
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
@@ -263,10 +272,9 @@ public class HomeFragment extends Fragment {
         if(event.equals("MEASURE")){
             try {
            txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
-
-
             } catch (JSONException e) {
                 e.printStackTrace();
+                return;
             }
         }
 
@@ -275,6 +283,7 @@ public class HomeFragment extends Fragment {
             num = Double.parseDouble(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
         } catch (NumberFormatException | JSONException e) {
             e.printStackTrace();
+            return;
         }
         if (num >= 170){
             txt2.setText("Vacio");
