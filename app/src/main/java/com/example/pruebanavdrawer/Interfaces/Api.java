@@ -1,7 +1,5 @@
 package com.example.pruebanavdrawer.Interfaces;
 
-import com.example.pruebanavdrawer.Models.AccessToken;
-import com.example.pruebanavdrawer.Models.Auth;
 import com.example.pruebanavdrawer.Models.Example2;
 import com.example.pruebanavdrawer.Models.User;
 

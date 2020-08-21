@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
+import com.example.pruebanavdrawer.Classes.GetUrl;
 import com.example.pruebanavdrawer.Interfaces.Api;
 import com.example.pruebanavdrawer.Models.User;
 import com.example.pruebanavdrawer.R;
@@ -106,7 +107,7 @@ public class RegisterFragment extends Fragment {
       if (validator.validate()){
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://165.227.23.126:8888/user/")
+                    .baseUrl(GetUrl.getApiServer()+"/user/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 

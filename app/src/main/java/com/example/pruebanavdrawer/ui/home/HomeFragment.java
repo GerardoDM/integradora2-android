@@ -2,13 +2,10 @@ package com.example.pruebanavdrawer.ui.home;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,14 +14,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.pruebanavdrawer.Classes.GetUrl;
 import com.example.pruebanavdrawer.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -42,13 +40,14 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    private Button btn, btnOpen, btnNotification, btnToken;
+    private Button btn, btnOpen;
     private OkHttpClient client;
-    private TextView txt, txt2;
+    private TextView tvDistance, tvRemaingFood;
     private WebSocket ws;
     private String text1;
     private static  final String  CHANNEL_ID = "NOTIFICATION";
     private static  final int NOTIFICATION_ID = 0;
+    private Handler handler;
 
     private EchoWebSocketListener echoWebSocketListener;
 
@@ -78,10 +77,6 @@ public class HomeFragment extends Fragment {
 
             }
 
-
-            //System.out.println("printing on message...");
-            //System.out.println(text);
-            Handler handler = new Handler(getActivity().getMainLooper());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -95,13 +90,6 @@ public class HomeFragment extends Fragment {
                     }
 
 
-                    //   Gson gson = new Gson();
-                    //     Example example = gson.fromJson(String.valueOf(jsonObject), Example.class);
-
-                    //   Toast.makeText(getActivity(), example.getD().getEvent(), Toast.LENGTH_LONG).show();
-
-                    //_action(example);
-
                 }
             });
 
@@ -114,6 +102,7 @@ public class HomeFragment extends Fragment {
 
             super.onClosing(webSocket, code, reason);
             System.out.println(reason);
+            showToast(String.valueOf(code+"\n")+reason);
         }
 
         @Override
@@ -127,29 +116,18 @@ public class HomeFragment extends Fragment {
             }
 
         }
-    }
+    } /*class EchoWebSocketListener END*/
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         btn = view.findViewById(R.id.btn);
-        txt = view.findViewById(R.id.txt);
-        txt2 = view.findViewById(R.id.txt2);
+        tvDistance = view.findViewById(R.id.txt);
+        tvRemaingFood = view.findViewById(R.id.txt2);
         btnOpen = view.findViewById(R.id.btnOpen);
-        btnToken = view.findViewById(R.id.btnToken);
 
         client = new OkHttpClient();
-
-
-        btnToken.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showToken();
-            }
-        });
-
 
         btnOpen.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +142,8 @@ public class HomeFragment extends Fragment {
                 action();
             }
         });
+
+        handler = new Handler(getActivity().getMainLooper());
 
 
     }
@@ -201,7 +181,7 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        Request request = new Request.Builder().url("ws://165.227.23.126:8888/adonis-ws").build();
+        Request request = new Request.Builder().url(GetUrl.getWsServer()).build();
         EchoWebSocketListener listener = new HomeFragment.EchoWebSocketListener();
 
         ws = client.newWebSocket(request, listener);
@@ -231,16 +211,27 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        JSONObject jsonObj2 = null;
+        JSONObject d = new JSONObject();
         try {
-            jsonObj2 = new JSONObject("{\"t\":7,\"d\":{\"topic\":\"iot\",\"event\":\"dispense\"}}");
+
+            JSONObject data = new JSONObject();
+            data.put("description","started servo");
+            data.put("username",GetUrl.getUsername());
+
+            d.put("topic","iot");
+            d.put("event","dispense");
+            d.put("data",data);
+
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("t",7);
+            jsonObject.put("d",d);
+
+            ws.send(jsonObject.toString());
+
         } catch (JSONException e) {
             e.printStackTrace();
-            return;
         }
-
-
-        ws.send(String.valueOf(jsonObj2));
 
     }
 
@@ -257,12 +248,6 @@ public class HomeFragment extends Fragment {
 
         if(event.equals("MESSAGE")){
 
-            try {
-                showToast(jsonObject.getJSONObject("d").toString(8));
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return;
-            }
 
             try{
                 boolean servo_active = jsonObject.getJSONObject("d").getJSONObject("data").getBoolean("servo_active");
@@ -289,8 +274,8 @@ public class HomeFragment extends Fragment {
 
         if(event.equals("MEASURE")){
             try {
-           txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance") + "cm");
-
+                String distance = jsonObject.getJSONObject("d").getJSONObject("data").getString("distance") + "cm";
+                tvDistance.setText(distance);
             } catch (JSONException e) {
                 e.printStackTrace();
                 return;
@@ -302,13 +287,6 @@ public class HomeFragment extends Fragment {
             createNotificationChannel();
             createNotification();
             return;
-            /*try {
-                createNotificationChannel();
-                createNotification();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return;
-            }*/
         }
 
         Double num = null;
@@ -318,11 +296,11 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
             return;
         }
-        if (num <= 170){
-            txt2.setText("Vacio");
+        if (num >= 14){
+            tvRemaingFood.setText("Vacio");
             return;
         }
-        txt2.setText("Lleno");
+        tvRemaingFood.setText("Lleno");
 
     }
 
@@ -359,15 +337,6 @@ public class HomeFragment extends Fragment {
         }
 
     }
-
-    private void showToken(){
-        SharedPreferences preferences = getActivity().getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
-        String retrivedToken  = preferences.getString("TOKEN",null);//second parameter default value.
-        Toast.makeText(getActivity(), retrivedToken, Toast.LENGTH_LONG).show();
-    }
-
-
-
 
 
 }

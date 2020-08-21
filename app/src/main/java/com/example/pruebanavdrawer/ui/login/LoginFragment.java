@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavDirections;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
@@ -25,6 +24,7 @@ import android.widget.Toast;
 import com.basgeekball.awesomevalidation.AwesomeValidation;
 import com.basgeekball.awesomevalidation.ValidationStyle;
 import com.basgeekball.awesomevalidation.utility.RegexTemplate;
+import com.example.pruebanavdrawer.Classes.GetUrl;
 import com.example.pruebanavdrawer.Interfaces.Api;
 import com.example.pruebanavdrawer.Models.Example2;
 import com.example.pruebanavdrawer.R;
@@ -40,16 +40,10 @@ public class LoginFragment extends Fragment {
     private Button btnlogin;
     private TextView linkRegister;
     private EditText email, password;
-   // private String inputemail, inputpassword;
 
     private AwesomeValidation validator;
 
     private LoginViewModel mViewModel;
-
-    public static LoginFragment newInstance() {
-        return new LoginFragment();
-    }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,8 +65,8 @@ public class LoginFragment extends Fragment {
         email = (EditText) view.findViewById(R.id.input_email);
         password = (EditText) view.findViewById(R.id.input_password);
 
-   //     email.setText("e@e.com");
-     //   password.setText("123123123");
+        email.setText("e@e.com");
+        password.setText("123123123");
 
         linkRegister = (TextView) view.findViewById(R.id.link_register);
 
@@ -112,15 +106,12 @@ public class LoginFragment extends Fragment {
 
     private void login() {
 
-       //String inputemail = email.getText().toString();
-        //String inputpassword = password.getText().toString();
-
         validator.clear();
 
         if (validator.validate()){
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://165.227.23.126:8888/user/")
+                    .baseUrl(GetUrl.getApiServer()+"/user/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
@@ -137,23 +128,20 @@ public class LoginFragment extends Fragment {
 
                         Toast.makeText(getActivity(), response.message(), Toast.LENGTH_LONG).show();
 
-
                         return;
                     }
 
 
-                    String token = null;
                     try {
-                        Toast.makeText(getActivity(), response.body().getAuth().getToken(), Toast.LENGTH_LONG).show();
-                        token = response.body().getAuth().getToken();
+                        /*Toast.makeText(getActivity(), response.body().getAuth().getToken(), Toast.LENGTH_LONG).show();*/
+                        GetUrl.setUsername(response.body().getUser());
+                        GetUrl.setToken(response.body().getAuth().getToken());
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
 
-                    SharedPreferences preferences = getActivity().getSharedPreferences("MY_APP", Context.MODE_PRIVATE);
-                    preferences.edit().putString("TOKEN", token).apply();
 
-                    Navigation.findNavController(getView()).navigate(R.id.nav_home);
+                    Navigation.findNavController(getView()).navigate(R.id.fragmentHome);
 
 
                 }
