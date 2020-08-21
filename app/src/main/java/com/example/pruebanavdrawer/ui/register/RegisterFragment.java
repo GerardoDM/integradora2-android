@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import android.util.Patterns;
@@ -51,6 +52,13 @@ public class RegisterFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        validator = new AwesomeValidation(ValidationStyle.BASIC);
+        setupRules();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -58,9 +66,6 @@ public class RegisterFragment extends Fragment {
         email = (EditText) view.findViewById(R.id.input_email);
         password = (EditText) view.findViewById(R.id.input_password);
         linkLogin = (TextView) view.findViewById(R.id.link_login);
-        validator = new AwesomeValidation(ValidationStyle.BASIC);
-
-       setupRules();
 
         btnregister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +77,8 @@ public class RegisterFragment extends Fragment {
         linkLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.loginFragment);
+                NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.loginFragment,true).build();
+                Navigation.findNavController(view).navigate(R.id.loginFragment,null,navOptions);
             }
         });
 
@@ -88,6 +94,8 @@ public class RegisterFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(RegisterViewModel.class);
+        validator = new AwesomeValidation(ValidationStyle.BASIC);
+        setupRules();
         // TODO: Use the ViewModel
     }
 

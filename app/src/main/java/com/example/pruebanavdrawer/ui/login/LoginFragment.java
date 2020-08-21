@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavDirections;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import android.util.Patterns;
@@ -55,6 +57,13 @@ public class LoginFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        validator = new AwesomeValidation(ValidationStyle.BASIC);
+        setupRules();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -67,11 +76,6 @@ public class LoginFragment extends Fragment {
 
         linkRegister = (TextView) view.findViewById(R.id.link_register);
 
-        validator = new AwesomeValidation(ValidationStyle.BASIC);
-
-        setupRules();
-
-
 
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +87,8 @@ public class LoginFragment extends Fragment {
         linkRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.registerFragment);
+                NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.registerFragment,true).build();
+                Navigation.findNavController(view).navigate(R.id.registerFragment,null,navOptions);
             }
         });
 
@@ -99,6 +104,8 @@ public class LoginFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        validator = new AwesomeValidation(ValidationStyle.BASIC);
+        setupRules();
 
         // TODO: Use the ViewModel
     }
