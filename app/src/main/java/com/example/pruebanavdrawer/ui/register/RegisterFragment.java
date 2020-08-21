@@ -104,9 +104,7 @@ public class RegisterFragment extends Fragment {
 
             Api api = retrofit.create(Api.class);
 
-            Call<User> call = api.register(
-                    email.getText().toString(),
-                    password.getText().toString());
+            Call<User> call = api.register(email.getText().toString(), password.getText().toString());
 
             call.enqueue(new Callback<User>() {
                 @Override

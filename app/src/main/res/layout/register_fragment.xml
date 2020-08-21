@@ -25,19 +25,17 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:textColor="@color/cardview_light_background"
-
         android:hint="Email" />
 
 
     <!-- Password Label -->
 
-    <EditText android:id="@+id/input_password"
+    <EditText
+        android:id="@+id/input_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:textColor="@color/cardview_light_background"
-
-
         android:hint="Password"/>
 
 

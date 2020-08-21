@@ -289,7 +289,7 @@ public class HomeFragment extends Fragment {
 
         if(event.equals("MEASURE")){
             try {
-           txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance"));
+           txt.setText(jsonObject.getJSONObject("d").getJSONObject("data").getString("distance") + "cm");
 
             } catch (JSONException e) {
                 e.printStackTrace();
