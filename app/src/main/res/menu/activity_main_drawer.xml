@@ -12,6 +12,10 @@
             android:id="@+id/loginFragment"
             android:icon="@mipmap/ic_launcher"
             android:title="Login" />
+        <item
+            android:id="@+id/permissions"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Permisos" />
     </group>
 
 </menu>

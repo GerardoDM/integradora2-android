@@ -19,4 +19,9 @@
         android:id="@+id/fragmentHome"
         android:name="com.example.pruebanavdrawer.ui.home.HomeFragment"
         android:label="fragmentHome" />
+    <fragment
+        android:id="@+id/permissions"
+        android:name="com.example.pruebanavdrawer.ui.permissions.Permissions"
+        android:label="fragment_permissions"
+        tools:layout="@layout/fragment_permissions" />
 </navigation>

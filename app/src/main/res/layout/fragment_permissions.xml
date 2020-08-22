@@ -1,0 +1,91 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/permissions_fragment"
+    android:orientation="vertical"
+    tools:context="com.example.pruebanavdrawer.ui.permissions.Permissions">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark">
+
+        <TextView
+            android:id="@+id/tvWriteExt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:text="Permitir escribir en mi almacenamiento"
+            android:textColor="#FFF"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/swWriteExt"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Switch
+            android:id="@+id/swWriteExt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvWriteExt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvWriteExt" />
+
+        <TextView
+            android:id="@+id/tvUseCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:text="Usar mi camara"
+            android:textColor="#FFF"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@id/swCamera"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/tvWriteExt"
+            app:layout_constraintTop_toBottomOf="@id/tvWriteExt" />
+
+        <Switch
+            android:id="@+id/swCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/tvUseCamera"
+            app:layout_constraintBottom_toBottomOf="@id/tvUseCamera"
+            app:layout_constraintEnd_toEndOf="@id/swWriteExt"
+            />
+
+        <TextView
+            android:id="@+id/tvMicrophone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="#FFF"
+            android:text="Grabar audio con micrófono"
+            app:layout_constraintStart_toStartOf="@id/tvUseCamera"
+            app:layout_constraintTop_toBottomOf="@+id/tvUseCamera"
+            app:layout_constraintEnd_toStartOf="@id/swMicrophone"
+            app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            />
+
+        <Switch
+            android:id="@+id/swMicrophone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/tvMicrophone"
+            app:layout_constraintEnd_toEndOf="@id/swCamera"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</FrameLayout>
+
