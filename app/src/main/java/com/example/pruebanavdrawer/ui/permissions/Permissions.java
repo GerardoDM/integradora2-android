@@ -3,6 +3,7 @@ package com.example.pruebanavdrawer.ui.permissions;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,6 @@ import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -19,10 +19,16 @@ import com.example.pruebanavdrawer.R;
 public class Permissions extends Fragment {
 
     private final int PERMISSION_REQUEST_FRAGMENT = 2;
-    private Switch swWriteExternal,swCamera, swMicrophone;
+    private Switch swWriteExternal, swCamera, swMicrophone;
+    private String[] permissions;
 
     public Permissions() {
         // Required empty public constructor
+        permissions = new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO
+        };
     }
 
 
@@ -42,23 +48,25 @@ public class Permissions extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-         swWriteExternal = view.findViewById(R.id.swWriteExt);
-         swWriteExternal.setOnClickListener(v -> {
-             swWriteExternal.setEnabled(false);
-             activatePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-         });
+        swWriteExternal = view.findViewById(R.id.swWriteExt);
+        swWriteExternal.setOnClickListener(v -> {
+            swWriteExternal.setEnabled(false);
+            activatePermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        });
 
-         swCamera = view.findViewById(R.id.swCamera);
-         swCamera.setOnClickListener(v -> {
-             swCamera.setEnabled(false);
-             activatePermission(Manifest.permission.CAMERA);
-         });
+        swCamera = view.findViewById(R.id.swCamera);
+        swCamera.setOnClickListener(v -> {
+            swCamera.setEnabled(false);
+            activatePermission(Manifest.permission.CAMERA);
+        });
 
-         swMicrophone = view.findViewById(R.id.swMicrophone);
+        swMicrophone = view.findViewById(R.id.swMicrophone);
         swMicrophone.setOnClickListener(v -> {
             swMicrophone.setEnabled(false);
             activatePermission(Manifest.permission.RECORD_AUDIO);
         });
+
+        checkPermissions();
 
     }
 
@@ -76,15 +84,10 @@ public class Permissions extends Fragment {
     }
 
     private void checkPermissions(){
-        if (
-                !(
-                        ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) +
-                                ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED)
-        ) {
-            requestPermissions(new String[]{
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.CAMERA
-            }, PERMISSION_REQUEST_FRAGMENT);
+        for (String permission : permissions) {
+            if ((ContextCompat.checkSelfPermission(getActivity(), permission)) == PackageManager.PERMISSION_GRANTED) {
+                manipulateSwitch(permission,true);
+            }
         }
     }
 
@@ -99,42 +102,50 @@ public class Permissions extends Fragment {
             return;
         }
 
-        if(!((grantResults.length==1) && (grantResults[0]) == PackageManager.PERMISSION_GRANTED))
-        {
-            manipulateSwitch(permissions[0]);
-            return;
-        }
-
         for(int i = 0; i<grantResults.length;i++)
         {
             if(!(grantResults[i] == PackageManager.PERMISSION_GRANTED)){
-                manipulateSwitch(permissions[i]);
+                manipulateSwitch(permissions[i],false);
             }
         }
 
     }
 
-    private void manipulateSwitch(String permission){
-       switch(permission){
-           case Manifest.permission.WRITE_EXTERNAL_STORAGE:{
-               swWriteExternal.setEnabled(true);
-               swWriteExternal.setChecked(false);
-               break;
-           }
+    private void manipulateSwitch(String permission, boolean granted){
+        switch(permission){
+            case Manifest.permission.WRITE_EXTERNAL_STORAGE:{
+                if(granted){
+                    swWriteExternal.setEnabled(false);
+                    swWriteExternal.setChecked(true);
+                    return;
+                }
+                swWriteExternal.setEnabled(true);
+                swWriteExternal.setChecked(false);
+                break;
+            }
 
-           case Manifest.permission.CAMERA:{
-               swCamera.setEnabled(true);
-               swCamera.setChecked(false);
-               break;
-           }
+            case Manifest.permission.CAMERA:{
+                if(granted){
+                    swCamera.setEnabled(false);
+                    swCamera.setChecked(true);
+                    return;
+                }
+                swCamera.setEnabled(true);
+                swCamera.setChecked(false);
+                break;
+            }
 
-           case Manifest.permission.RECORD_AUDIO:{
-               swMicrophone.setEnabled(true);
-               swMicrophone.setChecked(false);
-               break;
-           }
-
-       }
+            case Manifest.permission.RECORD_AUDIO:{
+                if(granted){
+                    swMicrophone.setEnabled(false);
+                    swMicrophone.setChecked(true);
+                    return;
+                }
+                swMicrophone.setEnabled(true);
+                swMicrophone.setChecked(false);
+                break;
+            }
+        }
     }
 
 }
